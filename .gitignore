@@ -1,0 +1,40 @@
+
+# Python environments and generated files
+.venv/
+.venv-training/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# macOS
+.DS_Store
+__MACOSX/
+
+# Local datasets and source videos
+data/
+datasets/
+
+# Model weights and exported models
+models/
+*.pt
+*.onnx
+
+# Training, runtime and demonstration outputs
+outputs/
+runs/
+
+# Temporary files and logs
+*.log
+*.tmp
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Local archive
+src.zip
+
+config/mvp_industrial_video_04.yaml

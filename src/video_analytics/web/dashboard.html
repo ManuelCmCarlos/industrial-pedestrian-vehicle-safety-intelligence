@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Industrial Pedestrian–Vehicle Safety &amp; Near-Miss Intelligence</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #15243a;
+      --muted: #607089;
+      --line: #dce4ec;
+      --panel: #ffffff;
+      --bg: #f3f6fa;
+      --navy: #15253b;
+      --accent: #047d79;
+      --amber: #946200;
+      --red: #ab3030;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); }
+    header { background: var(--navy); color: #fff; padding: 26px max(20px, calc((100vw - 1140px) / 2)); }
+    header .eyebrow { color: #9ad4d0; font-weight: 750; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: 8px 0 7px; font-size: clamp(22px, 3vw, 32px); letter-spacing: -.035em; }
+    header p { margin: 0; color: #c1cddb; max-width: 720px; font-size: 14px; line-height: 1.55; }
+    main { max-width: 1180px; margin: 0 auto; padding: 24px 20px 48px; }
+    .toolbar { display: flex; justify-content: space-between; gap: 14px; align-items: center; flex-wrap: wrap; margin-bottom: 18px; }
+    .toolbar-left, .toolbar-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .label { font-size: 13px; font-weight: 650; color: #3e526c; }
+    select, button { border-radius: 9px; padding: 10px 13px; font: inherit; font-size: 13px; }
+    select { background: white; border: 1px solid #b9c8d8; color: var(--ink); }
+    button { border: 1px solid var(--accent); background: var(--accent); color: #fff; font-weight: 700; cursor: pointer; }
+    button:disabled { cursor: wait; opacity: .65; }
+    button:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid #7dcac7; outline-offset: 2px; }
+    .update { font-size: 12px; color: var(--muted); }
+    .metrics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; margin-bottom: 18px; }
+    .metric { background: var(--panel); border: 1px solid var(--line); border-radius: 13px; padding: 18px 20px; }
+    .metric .number { font-size: 32px; line-height: 1.25; font-weight: 780; font-variant-numeric: tabular-nums; }
+    .metric .name { color: var(--muted); font-size: 12px; font-weight: 650; margin-top: 4px; }
+    .metric .note { font-size: 11px; color: var(--muted); margin-top: 5px; }
+    .section { background: var(--panel); border: 1px solid var(--line); border-radius: 13px; overflow: hidden; }
+    .section-head { padding: 19px 20px; display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap; border-bottom: 1px solid var(--line); }
+    h2 { font-size: 17px; margin: 0; letter-spacing: -.02em; }
+    .section-head p { margin: 5px 0 0; font-size: 12px; color: var(--muted); }
+    .status { font-size: 12px; color: var(--muted); }
+    .status.error { color: var(--red); font-weight: 700; }
+    .table-scroll { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; font-size: 13px; }
+    th { background: #f7f9fc; color: #61718a; text-align: left; font-size: 11px; letter-spacing: .045em; text-transform: uppercase; white-space: nowrap; }
+    th, td { padding: 13px 15px; border-bottom: 1px solid #e7edf3; vertical-align: top; }
+    tbody tr:last-child td { border-bottom: none; }
+    td:first-child { font-weight: 750; font-variant-numeric: tabular-nums; }
+    .pill { display: inline-block; border-radius: 7px; background: #e7f4f2; color: #006861; padding: 5px 9px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .pill.warning { background: #fff1d8; color: #875b00; }
+    .subtle { color: var(--muted); font-size: 11px; margin-top: 4px; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+    .cell-time { white-space: nowrap; }
+    details { min-width: 160px; }
+    summary { cursor: pointer; color: #086e79; font-weight: 650; }
+    dl { margin: 12px 0 0; display: grid; grid-template-columns: minmax(70px,auto) 1fr; gap: 7px 10px; max-width: 360px; overflow-wrap: anywhere; }
+    dt { color: var(--muted); font-size: 11px; }
+    dd { margin: 0; font-size: 11px; }
+    pre { background: #f3f6fa; border: 1px solid #e1e9f0; padding: 10px; border-radius: 7px; max-width: 360px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 11px; }
+    .notice { padding: 19px 20px; color: var(--muted); font-size: 13px; }
+    .notice.error { color: var(--red); }
+    footer { margin-top: 17px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    @media (max-width: 700px) { .metrics { grid-template-columns: 1fr; } .metric .number { font-size: 26px; } th, td { padding: 11px 12px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Industrial Pedestrian–Vehicle Safety &amp; Near-Miss Intelligence</h1>
+    <p>Monitorização de ocorrências e alertas preventivos de circulação partilhada.</p>
+  </header>
+  <main>
+    <section class="toolbar" aria-label="Controlos da consulta">
+      <div class="toolbar-left">
+        <label for="limit" class="label">Eventos a consultar</label>
+        <select id="limit" aria-label="Número máximo de eventos">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3" selected>3</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+        <button type="button" id="refresh">Atualizar eventos</button>
+      </div>
+      <div class="update" id="updated">Aguardando consulta</div>
+    </section>
+
+    <section class="metrics" aria-label="Resumo dos eventos consultados">
+      <div class="metric"><div class="number" id="count-all">—</div><div class="name">Eventos devolvidos</div><div class="note">Apenas os registos da consulta atual</div></div>
+      <div class="metric"><div class="number" id="count-warning">—</div><div class="name">Alertas preventivos</div><div class="note">Circulação partilhada, não near-miss</div></div>
+      <div class="metric"><div class="number" id="count-zone">—</div><div class="name">Intrusões em zona</div><div class="note">Eventos do tipo zone_intrusion</div></div>
+    </section>
+
+    <section class="section" aria-labelledby="events-heading">
+      <div class="section-head">
+        <div><h2 id="events-heading">Histórico de ocorrências</h2><p>Ordenado pela API do ID SQLite mais recente para o mais antigo</p></div>
+        <div class="status" id="status" role="status" aria-live="polite">A carregar...</div>
+      </div>
+      <div id="table-area" class="table-scroll" hidden>
+        <table>
+          <thead><tr><th scope="col">ID</th><th scope="col">Registado em</th><th scope="col">Ocorrência</th><th scope="col">Objeto</th><th scope="col">Track</th><th scope="col">Detalhes</th></tr></thead>
+          <tbody id="events-body"></tbody>
+        </table>
+      </div>
+      <p class="notice" id="message">A consultar os eventos existentes na base de dados.</p>
+    </section>
+    <footer>
+      Os indicadores representam os eventos da consulta atual. Para consultar novamente os registos, selecione «Atualizar eventos». Os alertas apresentados são preventivos e não confirmam uma quase colisão.
+    </footer>
+  </main>
+
+  <script>
+    "use strict";
+    const $ = (id) => document.getElementById(id);
+    const eventLabels = {
+      pedestrian_vehicle_shared_aisle_warning: "Alerta preventivo · circulação partilhada",
+      zone_intrusion: "Intrusão em zona",
+      line_crossing: "Cruzamento de linha"
+    };
+    const classLabels = {person: "Pessoa", industrial_vehicle: "Veículo industrial"};
+
+    function cell(row, value, cssClass = "") {
+      const td = document.createElement("td");
+      if (cssClass) td.className = cssClass;
+      td.textContent = String(value ?? "—");
+      row.appendChild(td);
+      return td;
+    }
+
+    function localTime(timestamp) {
+      if (typeof timestamp !== "string") return "—";
+      const date = new Date(timestamp);
+      return Number.isNaN(date.getTime()) ? timestamp : date.toLocaleString("pt-PT", {dateStyle: "short", timeStyle: "medium"});
+    }
+
+    function renderEvent(event) {
+      const tr = document.createElement("tr");
+      cell(tr, event.id);
+      const timeCell = cell(tr, localTime(event.timestamp), "cell-time");
+      timeCell.title = event.timestamp || "";
+
+      const typeCell = document.createElement("td");
+      const pill = document.createElement("span");
+      pill.className = event.event_type === "pedestrian_vehicle_shared_aisle_warning" ? "pill warning" : "pill";
+      pill.textContent = eventLabels[event.event_type] || event.event_type || "Tipo desconhecido";
+      typeCell.appendChild(pill);
+      tr.appendChild(typeCell);
+
+      const objectCell = cell(tr, classLabels[event.object_class] || event.object_class || "—");
+      const source = document.createElement("div");
+      source.className = "subtle";
+      source.textContent = `Origem: ${event.source_id ?? "—"}`;
+      objectCell.appendChild(source);
+      cell(tr, event.track_id, "mono");
+
+      const detailsCell = document.createElement("td");
+      const details = document.createElement("details");
+      const summary = document.createElement("summary");
+      summary.textContent = "Ver detalhes";
+      details.appendChild(summary);
+      const description = document.createElement("dl");
+      const items = [
+        ["Regra", event.rule_id],
+        ["Confiança", typeof event.confidence === "number" ? event.confidence.toFixed(3) : event.confidence],
+        ["Direção", event.direction],
+        ["Frame", event.metadata?.frame_index],
+        ["Tempo vídeo (s)", event.metadata?.source_time_seconds],
+        ["Track veículo", event.metadata?.vehicle_track_id]
+      ];
+      for (const [key, value] of items) {
+        if (value === null || value === undefined) continue;
+        const dt = document.createElement("dt");
+        const dd = document.createElement("dd");
+        dt.textContent = key;
+        dd.textContent = String(value);
+        description.append(dt, dd);
+      }
+      details.appendChild(description);
+      if (event.metadata && Object.keys(event.metadata).length) {
+        const caption = document.createElement("div");
+        caption.className = "subtle";
+        caption.textContent = "Metadados originais:";
+        const pre = document.createElement("pre");
+        pre.textContent = JSON.stringify(event.metadata, null, 2);
+        details.append(caption, pre);
+      }
+      detailsCell.appendChild(details);
+      tr.appendChild(detailsCell);
+      return tr;
+    }
+
+    async function loadEvents() {
+      const button = $("refresh");
+      const limit = $("limit").value;
+      button.disabled = true;
+      $("status").className = "status";
+      $("status").textContent = "A consultar...";
+      $("message").className = "notice";
+      $("message").hidden = true;
+      $("table-area").hidden = true;
+      try {
+        const response = await fetch(`/events?limit=${encodeURIComponent(limit)}`, {cache: "no-store"});
+        if (!response.ok) {
+          let detail = `A API respondeu com HTTP ${response.status}.`;
+          try {
+            const errorBody = await response.json();
+            if (typeof errorBody.detail === "string") detail = errorBody.detail;
+          } catch (_) { /* manter mensagem HTTP */ }
+          throw new Error(detail);
+        }
+        const events = await response.json();
+        if (!Array.isArray(events)) throw new Error("A API não devolveu uma lista de eventos.");
+
+        const body = $("events-body");
+        body.replaceChildren();
+        for (const event of events) body.appendChild(renderEvent(event));
+        $("count-all").textContent = events.length;
+        $("count-warning").textContent = events.filter(e => e.event_type === "pedestrian_vehicle_shared_aisle_warning").length;
+        $("count-zone").textContent = events.filter(e => e.event_type === "zone_intrusion").length;
+        $("status").textContent = `${events.length} registo(s) apresentado(s)`;
+        $("updated").textContent = `Consultado: ${new Date().toLocaleString("pt-PT")}`;
+        if (events.length === 0) {
+          $("message").textContent = "Nenhum evento encontrado nesta base de dados.";
+          $("message").hidden = false;
+        } else {
+          $("table-area").hidden = false;
+        }
+      } catch (error) {
+        $("status").className = "status error";
+        $("status").textContent = "Falha na consulta";
+        $("message").className = "notice error";
+        $("message").textContent = `Não foi possível recuperar os eventos. ${error.message}`;
+        $("message").hidden = false;
+        $("updated").textContent = "Consulta não concluída";
+        $("count-all").textContent = "—";
+        $("count-warning").textContent = "—";
+        $("count-zone").textContent = "—";
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    $("refresh").addEventListener("click", loadEvents);
+    $("limit").addEventListener("change", loadEvents);
+    loadEvents();
+  </script>
+</body>
+</html>

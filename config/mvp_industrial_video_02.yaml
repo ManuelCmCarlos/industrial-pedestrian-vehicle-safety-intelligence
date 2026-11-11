@@ -1,0 +1,32 @@
+source:
+  id: camera_01
+  uri: "data/videos/original (2).mp4"
+
+model:
+  path: outputs/training/baseline_02/weights/best.onnx
+  confidence_threshold: 0.25
+  nms_threshold: 0.45
+
+tracking:
+  track_activation_threshold: 0.45
+  high_conf_det_threshold: 0.45
+  minimum_consecutive_frames: 2
+  lost_track_buffer: 30
+
+storage:
+  database_path: data/events.db
+
+rules:
+  line_crossing:
+    enabled: true
+    id: entrance_line
+    line_y: 550
+
+  zone_intrusion:
+    enabled: true
+    id: restricted_zone
+    x1: 700
+    y1: 340
+    x2: 1450
+    y2: 800
+    y2: 800

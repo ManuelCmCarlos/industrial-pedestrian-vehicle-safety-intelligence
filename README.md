@@ -8,7 +8,15 @@ An end-to-end computer vision application for industrial safety monitoring. It d
 
 
 
-https://github.com/user-attachments/assets/45ae48cf-d228-4c15-87ac-8ca571f3d28e
+
+
+
+
+https://github.com/user-attachments/assets/9cd64171-73b7-44b9-b052-8e246c21ce32
+
+
+
+
 
 
 

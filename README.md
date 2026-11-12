@@ -6,9 +6,18 @@ An end-to-end computer vision application for industrial safety monitoring. It d
 
 ### Industrial Video Analytics
 
-[Watch the demonstration](assets/industrial_demo.mp4)
 
-<sub><a href="https://huggingface.co/datasets/nvidia/PhysicalAI-SmartSpaces">NVIDIA</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · Annotations added by this project.</sub>
+
+https://github.com/user-attachments/assets/45ae48cf-d228-4c15-87ac-8ca571f3d28e
+
+
+
+<details>
+<summary><sub>NVIDIA · CC BY 4.0 · Annotations added by this project.</sub></summary>
+
+<sub><a href="https://huggingface.co/datasets/nvidia/PhysicalAI-SmartSpaces">Original footage</a> · <a href="https://creativecommons.org/licenses/by/4.0/">License</a></sub>
+
+</details>
 
 ### Event Monitoring Dashboard
 

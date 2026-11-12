@@ -13,7 +13,7 @@ https://github.com/user-attachments/assets/45ae48cf-d228-4c15-87ac-8ca571f3d28e
 
 
 <details>
-<summary><sub>NVIDIA · CC BY 4.0 · Annotations added by this project.</sub></summary>
+<summary><sub>Original footage by NVIDIA (CC BY 4.0) · Detection, tracking and safety annotations by this project.</sub></summary>
 
 <sub><a href="https://huggingface.co/datasets/nvidia/PhysicalAI-SmartSpaces">Original footage</a> · <a href="https://creativecommons.org/licenses/by/4.0/">License</a></sub>
 

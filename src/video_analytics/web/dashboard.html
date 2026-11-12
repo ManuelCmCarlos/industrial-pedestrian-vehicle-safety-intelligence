@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="en-GB">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -71,13 +71,13 @@
 <body>
   <header>
     <h1>Industrial Pedestrian–Vehicle Safety &amp; Near-Miss Intelligence</h1>
-    <p>Monitorização de ocorrências e alertas preventivos de circulação partilhada.</p>
+    <p>Industrial safety event monitoring and preventive alerts.</p>
   </header>
   <main>
-    <section class="toolbar" aria-label="Controlos da consulta">
+    <section class="toolbar" aria-label="Event query controls">
       <div class="toolbar-left">
-        <label for="limit" class="label">Eventos a consultar</label>
-        <select id="limit" aria-label="Número máximo de eventos">
+        <label for="limit" class="label">Event limit</label>
+        <select id="limit" aria-label="Maximum number of events">
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3" selected>3</option>
@@ -86,32 +86,32 @@
           <option value="50">50</option>
           <option value="100">100</option>
         </select>
-        <button type="button" id="refresh">Atualizar eventos</button>
+        <button type="button" id="refresh">Refresh events</button>
       </div>
-      <div class="update" id="updated">Aguardando consulta</div>
+      <div class="update" id="updated">Waiting for events</div>
     </section>
 
-    <section class="metrics" aria-label="Resumo dos eventos consultados">
-      <div class="metric"><div class="number" id="count-all">—</div><div class="name">Eventos devolvidos</div><div class="note">Apenas os registos da consulta atual</div></div>
-      <div class="metric"><div class="number" id="count-warning">—</div><div class="name">Alertas preventivos</div><div class="note">Circulação partilhada, não near-miss</div></div>
-      <div class="metric"><div class="number" id="count-zone">—</div><div class="name">Intrusões em zona</div><div class="note">Eventos do tipo zone_intrusion</div></div>
+    <section class="metrics" aria-label="Event summary">
+      <div class="metric"><div class="number" id="count-all">—</div><div class="name">Events displayed</div><div class="note">Current selection only</div></div>
+      <div class="metric"><div class="number" id="count-warning">—</div><div class="name">Preventive warnings</div><div class="note">Shared-aisle activity</div></div>
+      <div class="metric"><div class="number" id="count-zone">—</div><div class="name">Zone intrusions</div><div class="note">Recorded zone intrusions</div></div>
     </section>
 
     <section class="section" aria-labelledby="events-heading">
       <div class="section-head">
-        <div><h2 id="events-heading">Histórico de ocorrências</h2><p>Ordenado pela API do ID SQLite mais recente para o mais antigo</p></div>
-        <div class="status" id="status" role="status" aria-live="polite">A carregar...</div>
+        <div><h2 id="events-heading">Event history</h2><p>Latest recorded events</p></div>
+        <div class="status" id="status" role="status" aria-live="polite">Loading...</div>
       </div>
       <div id="table-area" class="table-scroll" hidden>
         <table>
-          <thead><tr><th scope="col">ID</th><th scope="col">Registado em</th><th scope="col">Ocorrência</th><th scope="col">Objeto</th><th scope="col">Track</th><th scope="col">Detalhes</th></tr></thead>
+          <thead><tr><th scope="col">ID</th><th scope="col">Recorded at</th><th scope="col">Event type</th><th scope="col">Object</th><th scope="col">Track</th><th scope="col">Details</th></tr></thead>
           <tbody id="events-body"></tbody>
         </table>
       </div>
-      <p class="notice" id="message">A consultar os eventos existentes na base de dados.</p>
+      <p class="notice" id="message">Loading recorded events.</p>
     </section>
     <footer>
-      Os indicadores representam os eventos da consulta atual. Para consultar novamente os registos, selecione «Atualizar eventos». Os alertas apresentados são preventivos e não confirmam uma quase colisão.
+      Counts reflect the current selection. Preventive warnings indicate shared-aisle activity and do not confirm a near-miss.
     </footer>
   </main>
 
@@ -119,11 +119,11 @@
     "use strict";
     const $ = (id) => document.getElementById(id);
     const eventLabels = {
-      pedestrian_vehicle_shared_aisle_warning: "Alerta preventivo · circulação partilhada",
-      zone_intrusion: "Intrusão em zona",
-      line_crossing: "Cruzamento de linha"
+      pedestrian_vehicle_shared_aisle_warning: "Shared-aisle warning",
+      zone_intrusion: "Zone intrusion",
+      line_crossing: "Line crossing"
     };
-    const classLabels = {person: "Pessoa", industrial_vehicle: "Veículo industrial"};
+    const classLabels = {person: "Person", industrial_vehicle: "Industrial vehicle"};
 
     function cell(row, value, cssClass = "") {
       const td = document.createElement("td");
@@ -136,7 +136,7 @@
     function localTime(timestamp) {
       if (typeof timestamp !== "string") return "—";
       const date = new Date(timestamp);
-      return Number.isNaN(date.getTime()) ? timestamp : date.toLocaleString("pt-PT", {dateStyle: "short", timeStyle: "medium"});
+      return Number.isNaN(date.getTime()) ? timestamp : date.toLocaleString("en-GB", {dateStyle: "short", timeStyle: "medium"});
     }
 
     function renderEvent(event) {
@@ -148,30 +148,30 @@
       const typeCell = document.createElement("td");
       const pill = document.createElement("span");
       pill.className = event.event_type === "pedestrian_vehicle_shared_aisle_warning" ? "pill warning" : "pill";
-      pill.textContent = eventLabels[event.event_type] || event.event_type || "Tipo desconhecido";
+      pill.textContent = eventLabels[event.event_type] || event.event_type || "Unknown event type";
       typeCell.appendChild(pill);
       tr.appendChild(typeCell);
 
       const objectCell = cell(tr, classLabels[event.object_class] || event.object_class || "—");
       const source = document.createElement("div");
       source.className = "subtle";
-      source.textContent = `Origem: ${event.source_id ?? "—"}`;
+      source.textContent = `Source: ${event.source_id ?? "—"}`;
       objectCell.appendChild(source);
       cell(tr, event.track_id, "mono");
 
       const detailsCell = document.createElement("td");
       const details = document.createElement("details");
       const summary = document.createElement("summary");
-      summary.textContent = "Ver detalhes";
+      summary.textContent = "View details";
       details.appendChild(summary);
       const description = document.createElement("dl");
       const items = [
-        ["Regra", event.rule_id],
-        ["Confiança", typeof event.confidence === "number" ? event.confidence.toFixed(3) : event.confidence],
-        ["Direção", event.direction],
+        ["Rule", event.rule_id],
+        ["Confidence", typeof event.confidence === "number" ? event.confidence.toFixed(3) : event.confidence],
+        ["Direction", event.direction],
         ["Frame", event.metadata?.frame_index],
-        ["Tempo vídeo (s)", event.metadata?.source_time_seconds],
-        ["Track veículo", event.metadata?.vehicle_track_id]
+        ["Video time (s)", event.metadata?.source_time_seconds],
+        ["Vehicle track ID", event.metadata?.vehicle_track_id]
       ];
       for (const [key, value] of items) {
         if (value === null || value === undefined) continue;
@@ -185,7 +185,7 @@
       if (event.metadata && Object.keys(event.metadata).length) {
         const caption = document.createElement("div");
         caption.className = "subtle";
-        caption.textContent = "Metadados originais:";
+        caption.textContent = "Event metadata:";
         const pre = document.createElement("pre");
         pre.textContent = JSON.stringify(event.metadata, null, 2);
         details.append(caption, pre);
@@ -200,22 +200,30 @@
       const limit = $("limit").value;
       button.disabled = true;
       $("status").className = "status";
-      $("status").textContent = "A consultar...";
+      $("status").textContent = "Loading events...";
       $("message").className = "notice";
       $("message").hidden = true;
       $("table-area").hidden = true;
       try {
         const response = await fetch(`/events?limit=${encodeURIComponent(limit)}`, {cache: "no-store"});
         if (!response.ok) {
-          let detail = `A API respondeu com HTTP ${response.status}.`;
+          let detail = `The server returned HTTP ${response.status}.`;
           try {
             const errorBody = await response.json();
-            if (typeof errorBody.detail === "string") detail = errorBody.detail;
-          } catch (_) { /* manter mensagem HTTP */ }
+            if (typeof errorBody.detail === "string") {
+              const errorLabels = {
+                "Dashboard indisponível.": "Dashboard unavailable.",
+                "Recurso não encontrado.": "Resource not found.",
+                "Use limit como número inteiro entre 1 e 100.": "Event limit must be an integer between 1 and 100.",
+                "Falha ao consultar a base de dados.": "Unable to retrieve stored events."
+              };
+              detail = errorLabels[errorBody.detail] || detail;
+            }
+          } catch (_) { /* Keep the HTTP error message */ }
           throw new Error(detail);
         }
         const events = await response.json();
-        if (!Array.isArray(events)) throw new Error("A API não devolveu uma lista de eventos.");
+        if (!Array.isArray(events)) throw new Error("The server did not return an event list.");
 
         const body = $("events-body");
         body.replaceChildren();
@@ -223,21 +231,21 @@
         $("count-all").textContent = events.length;
         $("count-warning").textContent = events.filter(e => e.event_type === "pedestrian_vehicle_shared_aisle_warning").length;
         $("count-zone").textContent = events.filter(e => e.event_type === "zone_intrusion").length;
-        $("status").textContent = `${events.length} registo(s) apresentado(s)`;
-        $("updated").textContent = `Consultado: ${new Date().toLocaleString("pt-PT")}`;
+        $("status").textContent = `${events.length} ${events.length === 1 ? "event" : "events"} displayed`;
+        $("updated").textContent = `Last updated: ${new Date().toLocaleString("en-GB")}`;
         if (events.length === 0) {
-          $("message").textContent = "Nenhum evento encontrado nesta base de dados.";
+          $("message").textContent = "No recorded events found.";
           $("message").hidden = false;
         } else {
           $("table-area").hidden = false;
         }
       } catch (error) {
         $("status").className = "status error";
-        $("status").textContent = "Falha na consulta";
+        $("status").textContent = "Unable to load events";
         $("message").className = "notice error";
-        $("message").textContent = `Não foi possível recuperar os eventos. ${error.message}`;
+        $("message").textContent = `Unable to retrieve events. ${error.message}`;
         $("message").hidden = false;
-        $("updated").textContent = "Consulta não concluída";
+        $("updated").textContent = "Update failed";
         $("count-all").textContent = "—";
         $("count-warning").textContent = "—";
         $("count-zone").textContent = "—";

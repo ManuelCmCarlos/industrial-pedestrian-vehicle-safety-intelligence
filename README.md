@@ -94,3 +94,13 @@ The original footage and trained model are not bundled. The annotated demonstrat
 ## Current Scope
 
 The project demonstrates preventive shared-aisle warnings and zone-intrusion detection on recorded industrial video. Validated near-miss detection, collision prediction and production-scale deployment are outside the current scope. This is an engineering prototype, not a certified industrial safety system.
+
+## License
+
+Copyright © 2026 Carlos S. B. Manuel. All rights reserved.
+
+This project is publicly available for portfolio presentation and professional evaluation. Reuse, modification, redistribution, or commercial use of the original code requires prior written authorization from the author, except as otherwise permitted by applicable law.
+
+Third-party components remain subject to their respective licenses.
+
+See [LICENSE](LICENSE) for details.
